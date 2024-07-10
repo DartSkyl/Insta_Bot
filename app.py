@@ -1,14 +1,29 @@
-from flask import Flask, request
+import concurrent.futures
+from instagrapi import Client
+from configuration import *
+from check_new_comments import check_new_comments
+from direct_monitoring import direct_monitoring
+from insta_db import BotBase
 
-app = Flask(__name__)
+
+cl = Client()
+cl.login(ACCOUNT_USERNAME, ACCOUNT_PASSWORD)
+
+bot_base = BotBase()
+bot_base.check_db_structure()
 
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    data = request.json
-    print('Received Webhook data:', data)
-    return 'Webhook received', 200
+def comments_checking():
+    check_new_comments(ACCESS_TOKEN, bot_base)
+
+
+def direct_watcher():
+    direct_monitoring(cl, bot_base)
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future1 = executor.submit(comments_checking)
+        future2 = executor.submit(direct_watcher)
+
+    concurrent.futures.wait([future1, future2])
