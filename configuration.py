@@ -15,7 +15,7 @@ ACCOUNT_USERNAME = os.getenv('ACCOUNT_USERNAME')
 ACCOUNT_PASSWORD = os.getenv('ACCOUNT_PASSWORD')
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-ADMINS = [int(i) for i in os.getenv('ADMINS').split(', ')]
+ADMINS = [int(i) for i in os.getenv('ADMINS').split()]
 
 DEFAULT_COMMANDS = (
     ("start", "Главное меню и рестарт"),

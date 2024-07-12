@@ -1,4 +1,5 @@
 import concurrent.futures
+import datetime
 from instagrapi import Client
 from instagrapi.exceptions import UserNotFound
 from configuration import *
@@ -66,6 +67,8 @@ def output_user_points(message: Message):
 if __name__ == '__main__':
     print('Стартуем')
     # start_tg_interface()
+    with open('bonus_bot.log', 'a') as log_file:
+        log_file.write(f'\n\n\n========== New bot session {datetime.datetime.now()} ==========\n\n\n')
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future1 = executor.submit(comments_checking)
         future2 = executor.submit(direct_watcher)
