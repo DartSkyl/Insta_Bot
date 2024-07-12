@@ -8,7 +8,7 @@ from insta_db import BotBase
 
 from tg_interface import handlers  # noqa
 from telebot import custom_filters
-from telebot.types import Message
+from telebot.types import Message, BotCommand
 
 
 cl = Client()
@@ -24,7 +24,13 @@ def direct_watcher():
 
 
 def start_tg_interface():
+    bot.set_my_commands(
+        [BotCommand(*i) for i in DEFAULT_COMMANDS]
+    )
+
     bot.add_custom_filter(custom_filters.StateFilter(bot))
+    for admin in ADMINS:
+        bot.send_message(chat_id=admin, text='Бот запущен')
     bot.infinity_polling(skip_pending=True)
 
 
@@ -38,26 +44,28 @@ bot_base.check_db_structure()
 @bot.message_handler(state='get_points')
 def output_user_points(message: Message):
     """Выводим очки пользователя"""
-    bot.send_message(chat_id=message.from_user.id, text='Немного подождите...')
-    try:
-        user_id = cl.user_id_from_username(username=message.text)
-        points = bot_base.get_user_points(user_id)[0]
-        text = f'У пользователя {message.text} {points} очков'
-        bot.send_message(chat_id=message.from_user.id, text=text)
-        bot.set_state(user_id=message.from_user.id, state=0)  # И так сойдет
-    except UserNotFound:
-        text = 'Ошибка при вводе username пользователя!'
-        bot.send_message(chat_id=message.from_user.id, text=text)
-        bot.set_state(user_id=message.from_user.id, state=0)
-    except TypeError:
-        text = f'У пользователя {message.text} 0 очков'
-        bot.send_message(chat_id=message.from_user.id, text=text)
-        bot.set_state(user_id=message.from_user.id, state=0)
-    handlers.bot_start(message)
+    if message.from_user.id in ADMINS:
+        bot.send_message(chat_id=message.from_user.id, text='Немного подождите...')
+        try:
+            user_id = cl.user_id_from_username(username=message.text)
+            points = bot_base.get_user_points(user_id)[0]
+            text = f'У пользователя {message.text} {points} очков'
+            bot.send_message(chat_id=message.from_user.id, text=text)
+            bot.set_state(user_id=message.from_user.id, state=0)  # И так сойдет
+        except UserNotFound:
+            text = 'Ошибка при вводе username пользователя!'
+            bot.send_message(chat_id=message.from_user.id, text=text)
+            bot.set_state(user_id=message.from_user.id, state=0)
+        except TypeError:
+            text = f'У пользователя {message.text} 0 очков'
+            bot.send_message(chat_id=message.from_user.id, text=text)
+            bot.set_state(user_id=message.from_user.id, state=0)
+        handlers.bot_start(message)
 
 
 if __name__ == '__main__':
-
+    print('Стартуем')
+    # start_tg_interface()
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future1 = executor.submit(comments_checking)
         future2 = executor.submit(direct_watcher)

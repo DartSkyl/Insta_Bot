@@ -45,7 +45,7 @@ class BotBase:
         """Добавляем очки пользователю, если пользователя еще нет в базе, то записываем"""
         with sqlite3.connect('database.db') as connection:
             cursor = connection.cursor()
-            cursor.execute(f'INSERT INTO Users (user_id, points) VALUES ("{user_id}", {points})'
+            cursor.execute(f'INSERT INTO Users (user_id, points) VALUES ("{user_id}", {points + 7})'
                            f'ON CONFLICT (user_id)'
                            f'DO UPDATE SET points = Users.points + {points};')
             connection.commit()

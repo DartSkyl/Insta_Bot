@@ -1,5 +1,6 @@
 import requests
 import time
+import random
 from instagrapi import Client
 from insta_db import BotBase
 from sending_message_for_bot import send_message
@@ -8,7 +9,6 @@ from sending_message_for_bot import send_message
 def check_new_comments(_access_token, base: BotBase, client: Client):
     """Функция проверяет наличие новых комментариев"""
     while True:
-        com_start = time.time()
         # Получаем все отработанные комментарии
         old_comments = base.get_old_comments()
 
@@ -34,7 +34,6 @@ def check_new_comments(_access_token, base: BotBase, client: Client):
 
                         try:
                             if com_info.json()["from"]["username"] != '20.10.body.lab.studio':
-                                print(f'New comment: {comment["text"]} from {com_info.json()["from"]["username"]}')
                                 user_id = int(client.user_id_from_username(com_info.json()["from"]["username"]))
                                 send_message(
                                     user_id=user_id,
@@ -47,7 +46,4 @@ def check_new_comments(_access_token, base: BotBase, client: Client):
                         except KeyError:
                             base.add_new_comment(com_info.json()['id'])
 
-        finish_com = time.time() - com_start
-        print(f'Comments need: {finish_com}')
-        time.sleep(420)
-        print('\nNew cycle comments\n')
+        time.sleep(random.randint(60, 120))

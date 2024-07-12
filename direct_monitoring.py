@@ -19,7 +19,6 @@ def direct_monitoring(client: Client, base: BotBase):
     а именно упоминание в истории, реакция на историю и слов БОНУС, СТОП, ПРАВИЛА"""
 
     while True:
-        mes_start = time.time()
         old_messages = base.get_old_messages()
         # Все переписки проверять смысла нет, по этому будем проверять только последние 10
         user_chats = client.direct_threads()[:10]
@@ -34,7 +33,6 @@ def direct_monitoring(client: Client, base: BotBase):
                 if msg.user_id != '54875534063' and msg.id not in old_messages:
 
                     if msg.item_type == 'xma_reel_mention':  # Упоминание в истории
-                        print(f'Упоминание в истории от {msg.user_id}')
 
                         send_message(
                             user_id=int(msg.user_id),
@@ -44,7 +42,6 @@ def direct_monitoring(client: Client, base: BotBase):
                         )
 
                     elif msg.item_type == 'xma_reel_share' and len(msg.text) == 1:  # Реакция на историю
-                        print(f'Реакция на историю от {msg.user_id}')
 
                         send_message(
                             user_id=int(msg.user_id),
@@ -55,7 +52,6 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     try:
                         if msg.text.lower() in ['бонус', 'стоп', 'правила']:
-                            print(f'Пользователь хочет "{msg.text}"')
                             send_message(
                                 user_id=int(msg.user_id),
                                 action=action_dict[msg.text.lower()],
@@ -68,7 +64,4 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     base.add_new_message(msg.id)
 
-        mes_finish = time.time() - mes_start
-        print(f'Messages need: {mes_finish}')
-        time.sleep(random.randint(540, 900))
-        print('\nNew cycle direct\n')
+        time.sleep(random.randint(60, 120))
