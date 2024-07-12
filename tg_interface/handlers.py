@@ -6,6 +6,7 @@ from configuration import bot
 
 file_path_for_edit = ''
 
+
 @bot.callback_query_handler(func=lambda call: call.data == 'back')
 @bot.message_handler(commands=["start"])
 def bot_start(message: Message):
