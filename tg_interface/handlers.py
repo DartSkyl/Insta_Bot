@@ -78,25 +78,27 @@ def edit_msg_text(message: Message):
 
 
 @bot.message_handler(commands=["new_password"])
-def change_password(messages: Message):
+def change_password(message: Message):
     """Инициируем смену пароля от инстаграм аккаунта"""
-    bot.set_state(user_id=messages.from_user.id, state='password')
-    bot.send_message(chat_id=messages.from_user.id, text='Введите новый пароль:')
+    if message.from_user.id in ADMINS:
+        bot.set_state(user_id=message.from_user.id, state='password')
+        bot.send_message(chat_id=message.from_user.id, text='Введите новый пароль:')
 
 
 @bot.message_handler(state='password')
-def set_new_password_and_bot_restart(messages: Message):
+def set_new_password_and_bot_restart(message: Message):
     """Меняем пароль и перезапускаем бота"""
-    new_pass = messages.text
+    if message.from_user.id in ADMINS:
+        new_pass = message.text
 
-    with open('.env', 'r') as file:
-        old_data = file.read()
-        old_pass = old_data.splitlines()[1]
+        with open('.env', 'r') as file:
+            old_data = file.read()
+            old_pass = old_data.splitlines()[1]
 
-    new_data = old_data.replace(old_pass, f"ACCOUNT_PASSWORD = '{new_pass}'")
+        new_data = old_data.replace(old_pass, f"ACCOUNT_PASSWORD = '{new_pass}'")
 
-    with open('.env', 'w') as file:
-        file.write(new_data)
+        with open('.env', 'w') as file:
+            file.write(new_data)
 
-    bot.send_message(chat_id=messages.from_user.id, text='Пароль изменен, перезапускаю бота...')
-    os.system('systemctl restart bonus_bot.service')
+        bot.send_message(chat_id=message.from_user.id, text='Пароль изменен, перезапускаю бота...')
+        os.system('systemctl restart bonus_bot.service')
