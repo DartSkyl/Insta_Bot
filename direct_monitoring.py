@@ -1,6 +1,17 @@
 from instagrapi import Client
 from insta_db import BotBase
+from sending_message_for_bot import send_message
 import time
+import random
+
+
+stop_list = []
+
+action_dict = {
+    'правила': 'rules',
+    'стоп': 'stop',
+    'бонус': 'bonus'
+}
 
 
 def direct_monitoring(client: Client, base: BotBase):
@@ -19,16 +30,39 @@ def direct_monitoring(client: Client, base: BotBase):
             # Берем каждое отдельное сообщение
             for msg in chat.messages[:10]:
 
-                #  Смотрим что бы оно не принадлежало нам и не было уже обработано
+                #  Смотрим что бы оно не принадлежало нам и не было уже обработано 54875534063
                 if msg.user_id != '54875534063' and msg.id not in old_messages:
 
                     if msg.item_type == 'xma_reel_mention':  # Упоминание в истории
                         print(f'Упоминание в истории от {msg.user_id}')
+
+                        send_message(
+                            user_id=int(msg.user_id),
+                            action='mention',
+                            client=client,
+                            base=base
+                        )
+
                     elif msg.item_type == 'xma_reel_share' and len(msg.text) == 1:  # Реакция на историю
                         print(f'Реакция на историю от {msg.user_id}')
+
+                        send_message(
+                            user_id=int(msg.user_id),
+                            action='reaction',
+                            client=client,
+                            base=base
+                        )
+
                     try:
                         if msg.text.lower() in ['бонус', 'стоп', 'правила']:
                             print(f'Пользователь хочет "{msg.text}"')
+                            send_message(
+                                user_id=int(msg.user_id),
+                                action=action_dict[msg.text.lower()],
+                                client=client,
+                                base=base
+                            )
+
                     except AttributeError:
                         pass
 
@@ -36,5 +70,5 @@ def direct_monitoring(client: Client, base: BotBase):
 
         mes_finish = time.time() - mes_start
         print(f'Messages need: {mes_finish}')
-        time.sleep(300)
+        time.sleep(random.randint(540, 900))
         print('\nNew cycle direct\n')

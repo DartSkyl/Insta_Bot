@@ -19,6 +19,9 @@ class BotBase:
             # Таблица отработанных сообщений
             cursor.execute('CREATE TABLE IF NOT EXISTS Old_messages (message_id TEXT);')
 
+            # Таблица с теми кто отказался от участия
+            cursor.execute('CREATE TABLE IF NOT EXISTS Stop_list (user_id TEXT);')
+
             connection.commit()
 
     @staticmethod
@@ -48,6 +51,23 @@ class BotBase:
             connection.commit()
 
     @staticmethod
+    def add_in_stop_list(user_id: str):
+        """Добавляем в стоп-лист"""
+        with sqlite3.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute(f'INSERT INTO Stop_list (user_id) VALUES ("{user_id}");')
+            connection.commit()
+
+    @staticmethod
+    def get_stop_list():
+        """Достаем всех, кто отказался от участия"""
+        with sqlite3.connect('database.db') as connection:
+            cursor = connection.cursor()
+            all_users = cursor.execute(f'SELECT * FROM Stop_list;').fetchall()
+            all_users = [i[0] for i in all_users]  # Так как возвращается список картежей
+            return set(all_users)
+
+    @staticmethod
     def get_old_comments():
         """Выдаем все отработанные комментарии для сверки"""
         with sqlite3.connect('database.db') as connection:
@@ -70,7 +90,7 @@ class BotBase:
         """Возвращаем очки конкретного пользователя"""
         with sqlite3.connect('database.db') as connection:
             cursor = connection.cursor()
-            user_points = cursor.execute(f'SELECT * FROM History WHERE user_id = "{user_id}";').fetchone()
+            user_points = cursor.execute(f'SELECT points FROM Users WHERE user_id = "{user_id}";').fetchone()
             return user_points
 
 
