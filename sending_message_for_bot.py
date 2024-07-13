@@ -10,7 +10,8 @@ mes_dict = {
     'stop': os.path.join('msg_text', 'stop.txt'),
     'reaction': os.path.join('msg_text', '1_point.txt'),
     'comment': os.path.join('msg_text', '2_point.txt'),
-    'mention': os.path.join('msg_text', '5_point.txt')
+    'mention': os.path.join('msg_text', '5_point.txt'),
+    'return': os.path.join('msg_text', 'return.txt')
 }
 
 action_dict = {
@@ -78,3 +79,10 @@ def send_message(user_id: int, action: str, client: Client, base: BotBase):
             msg_text = f'На данный момент ваш счет составляет {user_points[0]}' if user_points \
                 else f'У вас пока что нет очков! Что бы узнать подробности акции отправьте "ПРАВИЛА"'
             client.direct_send(text=msg_text, user_ids=[user_id])
+
+    elif action == 'return':
+        base.remove_from_stop_list(str(user_id))
+        with open(f'{mes_dict[action]}', 'r', encoding='utf-8') as file:
+            msg_text = file.read()
+            client.direct_send(text=msg_text, user_ids=[user_id])
+

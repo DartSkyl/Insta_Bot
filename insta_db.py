@@ -59,6 +59,14 @@ class BotBase:
             connection.commit()
 
     @staticmethod
+    def remove_from_stop_list(user_id: str):
+        """Удаляем из стоп листа"""
+        with sqlite3.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute(f"DELETE FROM Stop_list WHERE user_id = '{user_id}'")
+            connection.commit()
+
+    @staticmethod
     def get_stop_list():
         """Достаем всех, кто отказался от участия"""
         with sqlite3.connect('database.db') as connection:

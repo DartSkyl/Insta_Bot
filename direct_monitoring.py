@@ -10,7 +10,8 @@ stop_list = []
 action_dict = {
     'правила': 'rules',
     'стоп': 'stop',
-    'бонус': 'bonus'
+    'бонус': 'bonus',
+    'рейтинг': 'return'
 }
 
 
@@ -51,7 +52,7 @@ def direct_monitoring(client: Client, base: BotBase):
                         )
 
                     try:
-                        if msg.text.lower() in ['бонус', 'стоп', 'правила']:
+                        if msg.text.lower() in ['бонус', 'стоп', 'правила', 'рейтинг']:
                             send_message(
                                 user_id=int(msg.user_id),
                                 action=action_dict[msg.text.lower()],
