@@ -76,7 +76,7 @@ def send_message(user_id: int, action: str, client: Client, base: BotBase):
 
         else:
             user_points = base.get_user_points(str(user_id))
-            msg_text = f'На данный момент ваш счет составляет {user_points[0]}' if user_points \
+            msg_text = f'На данный момент ваш счет составляет {user_points[0]} балов' if user_points \
                 else f'У вас пока что нет очков! Что бы узнать подробности акции отправьте "ПРАВИЛА"'
             client.direct_send(text=msg_text, user_ids=[user_id])
 
