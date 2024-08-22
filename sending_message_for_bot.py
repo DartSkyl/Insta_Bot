@@ -1,7 +1,6 @@
 from instagrapi import Client
 from insta_db import BotBase
 import os
-import time
 import datetime
 
 
@@ -25,7 +24,7 @@ action_dict = {
 today_user_actions_dict = dict()
 
 
-def send_message(user_id: int, action: str, client: Client, base: BotBase):
+async def send_message(user_id: int, action: str, client: Client, base: BotBase):
     """Функция отвечает за отправку сообщений. Отправляемое сообщение зависит от задействованного сценария"""
     stop_list = base.get_stop_list()
     if str(user_id) not in stop_list:

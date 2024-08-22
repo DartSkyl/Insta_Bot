@@ -1,9 +1,8 @@
 import os
-from dotenv import load_dotenv, find_dotenv
 import logging
-
-from telebot import TeleBot
-from telebot.storage import StateMemoryStorage
+from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
+from dotenv import load_dotenv, find_dotenv
 
 if not find_dotenv():
     exit("Переменные окружения не загружены т.к отсутствует файл .env")
@@ -22,8 +21,8 @@ DEFAULT_COMMANDS = (
     ("new_password", "Смена пароля"),
 )
 
-storage = StateMemoryStorage()
-bot = TeleBot(token=BOT_TOKEN, state_storage=storage)
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher(bot=bot, storage=MemoryStorage())
 
 logging.basicConfig(
     filename='bonus_bot.log',

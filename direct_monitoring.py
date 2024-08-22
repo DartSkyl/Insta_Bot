@@ -1,7 +1,7 @@
 from instagrapi import Client
 from insta_db import BotBase
 from sending_message_for_bot import send_message
-import time
+from asyncio import sleep
 import random
 
 
@@ -15,7 +15,7 @@ action_dict = {
 }
 
 
-def direct_monitoring(client: Client, base: BotBase):
+async def direct_monitoring(client: Client, base: BotBase):
     """Функция проверят директ инстаграм на наличие целевых действий,
     а именно упоминание в истории, реакция на историю и слов БОНУС, СТОП, ПРАВИЛА"""
 
@@ -35,7 +35,7 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     if msg.item_type == 'xma_reel_mention':  # Упоминание в истории
 
-                        send_message(
+                        await send_message(
                             user_id=int(msg.user_id),
                             action='mention',
                             client=client,
@@ -44,7 +44,7 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     elif msg.item_type == 'xma_reel_share' and len(msg.text) == 1:  # Реакция на историю
 
-                        send_message(
+                        await send_message(
                             user_id=int(msg.user_id),
                             action='reaction',
                             client=client,
@@ -53,7 +53,7 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     try:
                         if msg.text.lower() in ['бонус', 'стоп', 'правила', 'рейтинг']:
-                            send_message(
+                            await send_message(
                                 user_id=int(msg.user_id),
                                 action=action_dict[msg.text.lower()],
                                 client=client,
@@ -65,4 +65,4 @@ def direct_monitoring(client: Client, base: BotBase):
 
                     base.add_new_message(msg.id)
 
-        time.sleep(random.randint(60, 120))
+        await sleep(random.randint(60, 120))

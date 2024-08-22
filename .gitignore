@@ -2,3 +2,6 @@
 /.env
 /bot_for_test.py
 /*.json
+/vip_file.txt
+/bugaga.py
+/venv/
